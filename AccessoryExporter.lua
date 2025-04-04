@@ -8,12 +8,20 @@ local PlayerManager = sdk.get_managed_singleton("app.PlayerManager") --[[@as app
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
 local function exportJson(readerOutput, playerName)
+  if not SettingsManager.getCurrent().outputJson then
+    return
+  end
+
   json.dump_file(Utils.getPath(playerName, "accessories.json"), readerOutput)
 end
 
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
 local function exportGameWithJson(readerOutput, playerName)
+  if not SettingsManager.getCurrent().outputGameWithData then
+    return
+  end
+
   local gameWithData = { decos = {} }
 
   if SettingsManager.getCurrent().mergeGameWithDataWithExisting then
@@ -37,6 +45,10 @@ end
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
 local function exportCecilBowenSearch(readerOutput, playerName)
+  if not SettingsManager.getCurrent().outputCecilBowenSearchData then
+    return
+  end
+
   local data = {}
 
   for _, accessory in ipairs(readerOutput.accessories) do
@@ -52,6 +64,10 @@ end
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
 local function exportCsv(readerOutput, playerName)
+  if not SettingsManager.getCurrent().outputCsv then
+    return
+  end
+
   local columnOrder = { "accessoryIndex", "name", "slotLevel", "accessoryType", "rarity", "points", "max", "owned" }
 
   local csvWriter = CsvWriter.new(columnOrder)
@@ -93,10 +109,12 @@ re.on_draw_ui(function()
 
     imgui.new_line()
 
-    local mergeSettingChanged, newMergeSetting = imgui.checkbox("Merge existing GameWith data",
-      SettingsManager.getCurrent().mergeGameWithDataWithExisting)
-    if mergeSettingChanged then
-      SettingsManager.getCurrent().mergeGameWithDataWithExisting = newMergeSetting
+    if imgui.tree_node("Settings") then
+      _, SettingsManager.getCurrent().outputJson = imgui.checkbox("Output data as json", SettingsManager.getCurrent().outputJson)
+      _, SettingsManager.getCurrent().outputCsv = imgui.checkbox("Output data as csv", SettingsManager.getCurrent().outputCsv)
+      _, SettingsManager.getCurrent().outputCecilBowenSearchData = imgui.checkbox("Output data for https://cecilbowen.github.io/mhwilds-set-search/", SettingsManager.getCurrent().outputCecilBowenSearchData)
+      _, SettingsManager.getCurrent().outputGameWithData = imgui.checkbox("Output data for GameWith", SettingsManager.getCurrent().outputGameWithData)
+      _, SettingsManager.getCurrent().mergeGameWithDataWithExisting = imgui.checkbox("Merge with existing GameWith data", SettingsManager.getCurrent().mergeGameWithDataWithExisting)
     end
 
     imgui.begin_disabled(not playerAvailable)
