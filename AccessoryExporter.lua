@@ -3,7 +3,7 @@ local AccessoryReader = require("AccessoryExporter.AccessoryReader")
 local SettingsManager = require("AccessoryExporter.SettingsManager")
 local Utils = require("AccessoryExporter.Utils")
 
-local PlayerManager = sdk.get_managed_singleton("app.PlayerManager") --[[@as app.PlayerManager]]
+local PlayerManager = sdk.get_managed_singleton("app.PlayerManager")
 
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
@@ -91,6 +91,7 @@ re.on_draw_ui(function()
     local playerName = "N/A"
     local playerAvailable = false
 
+    ---@type app.cPlayerManageInfo
     local masterPlayer = nil
     pcall(function() masterPlayer = PlayerManager:getMasterPlayer() end)
 

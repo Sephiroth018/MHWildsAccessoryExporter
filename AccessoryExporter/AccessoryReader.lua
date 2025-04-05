@@ -1,12 +1,12 @@
 local Utils = require("AccessoryExporter.Utils")
 
-local RARE_FIXED = sdk.create_instance("app.ItemDef.RARE_Fixed") --[[@as app.ItemDef.RARE_Fixed]]
-local ACCESSORY_TYPE_Fixed = sdk.create_instance("app.EquipDef.ACCESSORY_TYPE_Fixed") --[[@as app.EquipDef.ACCESSORY_TYPE]]
-local AccessoryUtil = sdk.find_type_definition("app.AccessoryUtil") --[[@as RETypeDefinition]]
-local EquipDef = sdk.find_type_definition("app.EquipDef") --[[@as RETypeDefinition]]
-local EquipUtil = sdk.find_type_definition("app.EquipUtil") --[[@as RETypeDefinition]]
-local GuiTextData = sdk.find_type_definition("via.gui.message") --[[@as RETypeDefinition]]
-local VariousDataManager = sdk.get_managed_singleton("app.VariousDataManager") --[[@as app.VariousDataManager]]
+local RARE_FIXED = sdk.create_instance("app.ItemDef.RARE_Fixed")
+local ACCESSORY_TYPE_Fixed = sdk.create_instance("app.EquipDef.ACCESSORY_TYPE_Fixed")
+local AccessoryUtil = sdk.find_type_definition("app.AccessoryUtil")
+local EquipDef = sdk.find_type_definition("app.EquipDef")
+local EquipUtil = sdk.find_type_definition("app.EquipUtil")
+local GuiTextData = sdk.find_type_definition("via.gui.message")
+local VariousDataManager = sdk.get_managed_singleton("app.VariousDataManager")
 
 ---@enum
 local AccessoryTypeNameMapping = {
