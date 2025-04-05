@@ -131,7 +131,7 @@ end
 ---@return table<string, OwnedAccessory>
 function AccessoryReader.readOwnedAccessories()
   ---@type table<string, OwnedAccessory>
-  local result = {}
+  local result = Utils.copyTable(AccessoryReader.allAccessories) --[[@as table<string, OwnedAccessory>]]
 
   ---@type System.Collections.Generic.List<app.EquipDef.AccessoryWorkInfo>
   local ownedAccessories = AccessoryUtil:get_method("getAllAccessoryWorks()"):call(nil)
@@ -142,11 +142,7 @@ function AccessoryReader.readOwnedAccessories()
     local name = getText(EquipDef:get_method("Name(app.EquipDef.ACCESSORY_ID)"):call(nil, accessoryWork.ID) --[[@as System.Guid]])
     local owned = accessoryWork.Num
 
-    if not result[name] then
-      result[name] = Utils.copyTable(AccessoryReader.allAccessories[name])
-      result[name].owned = 0
-    end
-    result[name].owned = result[name].owned + owned
+    result[name].owned = (result[name].owned or 0) + owned
   end
 
   return result

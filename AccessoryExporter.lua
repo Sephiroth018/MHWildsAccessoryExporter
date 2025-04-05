@@ -107,15 +107,17 @@ re.on_draw_ui(function()
     imgui.same_line()
     imgui.text(Utils.getPath(playerName))
 
-    imgui.new_line()
-
     if imgui.tree_node("Settings") then
       _, SettingsManager.getCurrent().outputJson = imgui.checkbox("Output data as json", SettingsManager.getCurrent().outputJson)
       _, SettingsManager.getCurrent().outputCsv = imgui.checkbox("Output data as csv", SettingsManager.getCurrent().outputCsv)
       _, SettingsManager.getCurrent().outputCecilBowenSearchData = imgui.checkbox("Output data for https://cecilbowen.github.io/mhwilds-set-search/", SettingsManager.getCurrent().outputCecilBowenSearchData)
       _, SettingsManager.getCurrent().outputGameWithData = imgui.checkbox("Output data for GameWith", SettingsManager.getCurrent().outputGameWithData)
       _, SettingsManager.getCurrent().mergeGameWithDataWithExisting = imgui.checkbox("Merge with existing GameWith data", SettingsManager.getCurrent().mergeGameWithDataWithExisting)
+
+      imgui.tree_pop()
     end
+
+    imgui.new_line()
 
     imgui.begin_disabled(not playerAvailable)
     if imgui.button("Export data") then
