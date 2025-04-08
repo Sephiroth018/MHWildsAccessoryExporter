@@ -100,13 +100,10 @@ re.on_draw_ui(function()
       playerAvailable = true
     end
 
-    imgui.text("Playername:")
-    imgui.same_line()
-    imgui.text(playerName)
 
-    imgui.text("Export directory:")
+    imgui.text("Points from surplus accessories:")
     imgui.same_line()
-    imgui.text(Utils.getPath(playerName))
+    imgui.text((AccessoryReader.stats and tostring(AccessoryReader.stats.surplusPoints)) or "N/A")
 
     if imgui.tree_node("Settings") then
       _, SettingsManager.getCurrent().outputJson = imgui.checkbox("Output data as json", SettingsManager.getCurrent().outputJson)

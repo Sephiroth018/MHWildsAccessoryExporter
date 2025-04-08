@@ -8,7 +8,7 @@ local EquipUtil = sdk.find_type_definition("app.EquipUtil")
 local GuiTextData = sdk.find_type_definition("via.gui.message")
 local VariousDataManager = sdk.get_managed_singleton("app.VariousDataManager")
 
----@enum
+---@enum AccessoryTypeNameMapping
 local AccessoryTypeNameMapping = {
   [ACCESSORY_TYPE_Fixed.ACC_TYPE_00] = "Weapon",
   [ACCESSORY_TYPE_Fixed.ACC_TYPE_01] = "Armor",
@@ -43,7 +43,7 @@ local AccessoryPoints = {
 ---@field owned integer
 
 ---@class AccessoryStats
----@field overheadPoints integer
+---@field surplusPoints integer
 
 ---@class AccessoryReaderOutput
 ---@field accessories OwnedAccessory[]
@@ -57,8 +57,10 @@ end
 
 ---@class AccessoryReader
 ---@field allAccessories table<string, Accessory>
+---@field stats? AccessoryStats
 local AccessoryReader = {
-  allAccessories = {}
+  allAccessories = {},
+  stats = nil
 }
 
 ---@private
@@ -154,12 +156,12 @@ end
 function AccessoryReader.prepareForOutput(accessories)
   ---@type OwnedAccessory[]
   local result = {}
-  local overheadPoints = 0
+  local surplusPoints = 0
 
   for _, accessory in pairs(accessories) do
     table.insert(result, accessory)
-    local overhead = math.max(0, accessory.owned - accessory.max)
-    overheadPoints = overheadPoints + (overhead * accessory.points)
+    local surplus = math.max(0, accessory.owned - accessory.max)
+    surplusPoints = surplusPoints + (surplus * accessory.points)
   end
 
   accessories = result
@@ -168,7 +170,8 @@ function AccessoryReader.prepareForOutput(accessories)
     return a.accessoryIndex < b.accessoryIndex
   end)
 
-  return { accessories = result, accessoryStats = { overheadPoints = overheadPoints } }
+  AccessoryReader.stats = { surplusPoints = surplusPoints }
+  return { accessories = result, accessoryStats = { surplusPoints = surplusPoints } }
 end
 
 ---@return AccessoryReaderOutput
