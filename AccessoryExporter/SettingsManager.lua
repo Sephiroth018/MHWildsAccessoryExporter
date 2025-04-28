@@ -1,17 +1,11 @@
 ---@class Settings
 ---@field public outputJson boolean
----@field public outputGameWithData boolean
----@field public mergeGameWithDataWithExisting boolean
----@field public outputCecilBowenSearchData boolean
 ---@field public outputCsv boolean
 
 ---@return Settings
 local function getDefaultSettings()
   return {
     outputJson = true,
-    outputGameWithData = true,
-    mergeGameWithDataWithExisting = true,
-    outputCecilBowenSearchData = true,
     outputCsv = true
   }
 end

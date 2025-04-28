@@ -18,20 +18,8 @@ end
 ---@param readerOutput AccessoryReaderOutput
 ---@param playerName string
 local function exportGameWithJson(readerOutput, playerName)
-  if not SettingsManager.getCurrent().outputGameWithData then
-    return
-  end
-
+  local path = Utils.getPath(playerName, "GameWith", "MHWildsSimulatorMyset.json")
   local gameWithData = { decos = {} }
-
-  if SettingsManager.getCurrent().mergeGameWithDataWithExisting then
-    gameWithData = json.load_file(Utils.getPath(playerName, "gamewith_data.json"))
-
-    gameWithData = gameWithData or { decos = {} }
-    if not gameWithData.decos then
-      gameWithData.decos = {}
-    end
-  end
 
   for _, accessory in ipairs(readerOutput.accessories) do
     if accessory.owned <= 5 then
@@ -39,16 +27,12 @@ local function exportGameWithJson(readerOutput, playerName)
     end
   end
 
-  json.dump_file(Utils.getPath(playerName, "gamewith_data.json"), gameWithData, -1)
+  sdk.copy_to_clipboard("window.localStorage.setItem('MHWildsSimulatorMyset', JSON.stringify(Object.assign(JSON.parse(window.localStorage.getItem('MHWildsSimulatorMyset') || '{}'), " ..
+    json.dump_string(gameWithData) .. ")))")
 end
 
 ---@param readerOutput AccessoryReaderOutput
----@param playerName string
-local function exportCecilBowenSearch(readerOutput, playerName)
-  if not SettingsManager.getCurrent().outputCecilBowenSearchData then
-    return
-  end
-
+local function exportCecilBowenSearch(readerOutput)
   local data = {}
 
   for _, accessory in ipairs(readerOutput.accessories) do
@@ -58,7 +42,7 @@ local function exportCecilBowenSearch(readerOutput, playerName)
     end
   end
 
-  json.dump_file(Utils.getPath(playerName, "cecilBowenSearch.json"), data, -1)
+  sdk.copy_to_clipboard("window.localStorage.setItem('decoInventory', '" .. json.dump_string(data) .. "')")
 end
 
 ---@param readerOutput AccessoryReaderOutput
@@ -86,6 +70,9 @@ local function exportData(playerName, exportFunctions)
   end
 end
 
+-- to hook for auto export:
+-- app.GUI090700.startExecute() - Melding - calls app.cReceiveItemInfo.recive() and .judge()
+
 re.on_draw_ui(function()
   if imgui.tree_node("AccessoryExporter") then
     local playerName = "N/A"
@@ -100,7 +87,6 @@ re.on_draw_ui(function()
       playerAvailable = true
     end
 
-
     imgui.text("Points from surplus accessories:")
     imgui.same_line()
     imgui.text((AccessoryReader.stats and tostring(AccessoryReader.stats.surplusPoints)) or "N/A")
@@ -108,9 +94,6 @@ re.on_draw_ui(function()
     if imgui.tree_node("Settings") then
       _, SettingsManager.getCurrent().outputJson = imgui.checkbox("Output data as json", SettingsManager.getCurrent().outputJson)
       _, SettingsManager.getCurrent().outputCsv = imgui.checkbox("Output data as csv", SettingsManager.getCurrent().outputCsv)
-      _, SettingsManager.getCurrent().outputCecilBowenSearchData = imgui.checkbox("Output data for https://cecilbowen.github.io/mhwilds-set-search/", SettingsManager.getCurrent().outputCecilBowenSearchData)
-      _, SettingsManager.getCurrent().outputGameWithData = imgui.checkbox("Output data for GameWith", SettingsManager.getCurrent().outputGameWithData)
-      _, SettingsManager.getCurrent().mergeGameWithDataWithExisting = imgui.checkbox("Merge with existing GameWith data", SettingsManager.getCurrent().mergeGameWithDataWithExisting)
 
       imgui.tree_pop()
     end
@@ -119,7 +102,14 @@ re.on_draw_ui(function()
 
     imgui.begin_disabled(not playerAvailable)
     if imgui.button("Export data") then
-      exportData(playerName, { exportJson, exportGameWithJson, exportCsv, exportCecilBowenSearch })
+      exportData(playerName, { exportJson, exportCsv })
+    end
+    if imgui.button("Copy cecilbowen export script") then
+      exportData(playerName, { exportCecilBowenSearch })
+    end
+    imgui.end_disabled()
+    if imgui.button("Copy GameWith.net export script") then
+      exportData(playerName, { exportGameWithJson })
     end
     imgui.end_disabled()
 
